@@ -130,3 +130,39 @@ input[type="number"] {
     font-weight: bold;
     color: #343a40;
 }
+
+.goal-controls {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.goal-controls span {
+    width: auto; /* Cambiar de 120px a auto para ajustar el tamaño al contenido */
+    text-align: left;
+    margin-right: 15px; /* Reducir el espacio entre el nombre y los botones */
+}
+
+.goal-controls button {
+    margin: 0 2px; /* Mantener el espacio reducido entre los botones */
+    padding: 5px 8px;
+}
+
+.goal-controls .buttons {
+    display: flex;
+    align-items: center;
+}
+
+.goal-controls .buttons button {
+    margin-right: 2px; /* Reducir el espacio entre los botones "+" y "-" */
+}
+
+.goal-controls .score {
+    margin-left: 5px; /* Mantener el espacio reducido entre los botones y el número */
+}
+
+.goals-container {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}

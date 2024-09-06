@@ -1,13 +1,11 @@
 let players = [];
 let fixedPairs = [];
 let matches = [];
-let playerGoals = {}; // Objeto para llevar cuenta de los goles de cada jugador
 
 function addPlayer() {
     const playerName = document.getElementById('playerName').value;
     if (playerName && !players.includes(playerName)) {
         players.push(playerName);
-        playerGoals[playerName] = 0; // Inicializar contador de goles por jugador
         updatePlayerList();
         updatePlayerSelects();
         document.getElementById('playerName').value = '';
@@ -96,8 +94,11 @@ function generateMatches() {
                 const match = {
                     team1: fixedPairs[i],
                     team2: fixedPairs[j],
-                    result: null
+                    goals: {} // Almacenar los goles de cada jugador
                 };
+                [...fixedPairs[i], ...fixedPairs[j]].forEach(player => {
+                    match.goals[player] = 0;
+                });
                 matches.push(match);
             }
         }
@@ -116,8 +117,11 @@ function generateMatches() {
                     const match = {
                         team1: pairs[i],
                         team2: pairs[j],
-                        result: null
+                        goals: {} // Almacenar los goles de cada jugador
                     };
+                    [...pairs[i], ...pairs[j]].forEach(player => {
+                        match.goals[player] = 0;
+                    });
                     matches.push(match);
                 }
             }
@@ -131,10 +135,49 @@ function generateMatches() {
             <span>${match.team1[0]} y ${match.team1[1]} vs ${match.team2[0]} y ${match.team2[1]}</span>
             <input type="number" id="resultTeam1_${index}" placeholder="Puntaje equipo 1">
             <input type="number" id="resultTeam2_${index}" placeholder="Puntaje equipo 2">
-            <input type="text" id="scorer_${index}" placeholder="Jugador que anotó los goles (separados por comas)">
+            <div class="goals-container" id="playersGoals_${index}">
+                ${generateGoalControls(index, match)}
+            </div>
         `;
         matchContainer.appendChild(matchDiv);
     });
+}
+
+function generateGoalControls(index, match) {
+    const players = [...match.team1, ...match.team2];
+    let controlsHTML = '';
+
+    players.forEach(player => {
+        controlsHTML += `
+            <div class="goal-controls">
+                <span>${player}</span>
+                <div class="buttons">
+                    <button onclick="addGoal(${index}, '${player}')">+</button>
+                    <button onclick="removeGoal(${index}, '${player}')">-</button>
+                </div>
+                <span class="score" id="goals_${player}_${index}">0</span>
+            </div>
+        `;
+    });
+
+    return controlsHTML;
+}
+
+function addGoal(matchIndex, player) {
+    matches[matchIndex].goals[player]++;
+    updateGoalDisplay(matchIndex, player);
+}
+
+function removeGoal(matchIndex, player) {
+    if (matches[matchIndex].goals[player] > 0) {
+        matches[matchIndex].goals[player]--;
+        updateGoalDisplay(matchIndex, player);
+    }
+}
+
+function updateGoalDisplay(matchIndex, player) {
+    const goalElement = document.getElementById(`goals_${player}_${matchIndex}`);
+    goalElement.textContent = matches[matchIndex].goals[player];
 }
 
 function getAllPairs(arr) {
@@ -157,15 +200,16 @@ function calculateResults() {
 
     let playerScores = {};
     let teamWins = {};
+    let totalGoals = {}; // Almacenar los goles totales por jugador
 
     players.forEach(player => {
         playerScores[player] = 0;
+        totalGoals[player] = 0;
     });
 
     matches.forEach((match, index) => {
         const team1Score = parseInt(document.getElementById(`resultTeam1_${index}`).value);
         const team2Score = parseInt(document.getElementById(`resultTeam2_${index}`).value);
-        const scorers = document.getElementById(`scorer_${index}`).value.split(',').map(name => name.trim());
 
         if (!isNaN(team1Score) && !isNaN(team2Score)) {
             let winningTeam, losingTeam;
@@ -189,11 +233,9 @@ function calculateResults() {
             }
             teamWins[teamKey]++;
 
-            // Registrar los goles anotados por los jugadores
-            scorers.forEach(scorer => {
-                if (playerGoals[scorer] !== undefined) {
-                    playerGoals[scorer]++;
-                }
+            // Sumar goles de los jugadores en este partido al total
+            Object.keys(match.goals).forEach(player => {
+                totalGoals[player] += match.goals[player];
             });
         }
     });
@@ -220,9 +262,9 @@ function calculateResults() {
     // Encontrar el jugador con más goles
     let maxGoals = -1;
     let topScorer = '';
-    for (let player in playerGoals) {
-        if (playerGoals[player] > maxGoals) {
-            maxGoals = playerGoals[player];
+    for (let player in totalGoals) {
+        if (totalGoals[player] > maxGoals) {
+            maxGoals = totalGoals[player];
             topScorer = player;
         }
     }
