@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Partidos 2 vs 2</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <style>
+        body {
+            background-image: url('backgr.jpg');
+            background-size: cover; /* Ajusta la imagen al tamaño de la pantalla */
+            background-position: center; /* Centra la imagen */
+            background-repeat: no-repeat; /* Evita que la imagen se repita */
+        }
+    </style>
+
+    <div id="app">
+        <h1>VIRGOMATCH CALCULATOR</h1>
+
+        <div class="card">
+            <h2>Ingresar Jugadores</h2>
+            <div class="input-container">
+                <input type="text" id="playerName" placeholder="Nombre del jugador">
+                <button class="btn" onclick="addPlayer()">Agregar Jugador</button>
+            </div>
+            <ul id="playerList" class="player-list"></ul>
+        </div>
+
+        <div class="card">
+            <h2>Modo de Generación de Partidos</h2>
+            <div class="input-container">
+                <label for="matchMode">Seleccione el modo:</label>
+                <select id="matchMode" onchange="togglePairOptions()">
+                    <option value="combinations">Todas las combinaciones</option>
+                    <option value="fixed">Parejas fijas</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card" id="fixedPairsSection" style="display: none;">
+            <h2>Formar Parejas Fijas</h2>
+            <div class="input-container">
+                <select id="player1Select"></select>
+                <select id="player2Select"></select>
+                <button class="btn" onclick="addFixedPair()">Agregar Pareja</button>
+            </div>
+            <ul id="pairList" class="player-list"></ul>
+        </div>
+
+        <div class="card">
+            <button class="btn large" onclick="generateMatches()">Generar Partidos</button>
+            <div id="matches" class="matches-container"></div>
+        </div>
+
+        <div class="card">
+            <h2>Resultados de los Partidos</h2>
+            <div id="results" class="results-container"></div>
+            <button class="btn large" onclick="calculateResults()">Calcular Ganadores</button>
+            <div id="winnerInfo" class="winner-info"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
